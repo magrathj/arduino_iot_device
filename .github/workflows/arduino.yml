@@ -8,7 +8,7 @@ on: [push, pull_request]
 # A workflow to validate if arduino code will compile 
 jobs:
   build:
-    name: Test compiling examples for UNO
+    name: Test compiling for UNO
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -16,14 +16,7 @@ jobs:
     - name: Compile all examples
       uses: ArminJo/arduino-test-compile@v3
   
-  compile:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: arduino/compile-sketches@v1
-        with:
-          enable-deltas-report: true
-      - uses: actions/upload-artifact@v2
-        with:
-          name: sketches-reports
-          path: sketches-reports
+      - uses: arduino/report-size-deltas@v1
