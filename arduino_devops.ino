@@ -1,23 +1,52 @@
+#include <TinyGPS++.h>
+#include <SoftwareSerial.h>
+
+SoftwareSerial serial_connection(11, 10); //RX=pin 10, TX=pin 11
+TinyGPSPlus gps;//This is the GPS object that will pretty much do all the grunt work with the NMEA data
+
+void setup()
+{
+  Serial.begin(9600);//This opens up communications to the Serial monitor in the Arduino IDE
+  serial_connection.begin(9600);//This opens up communications to the GPS
+  Serial.println("GPS Start");//Just show to the monitor that the sketch has started
+}
+
+void loop()
+{
+  while(serial_connection.available())//While there are characters to come from the GPS
+  {
+    gps.encode(serial_connection.read());//This feeds the serial NMEA data into the library one char at a time
+  }
+  if(gps.location.isUpdated())//This will pretty much be fired all the time anyway but will at least reduce it to only after a package of NMEA data comes in
+  {
+    //Get the latest info from the gps object which it derived from the data sent by the GPS unit
+    Serial.println("Satellite Count:");
+    Serial.println(gps.satellites.value());
+    Serial.println("Latitude:");
+    Serial.println(gps.location.lat(), 6);
+    Serial.println("Longitude:");
+    Serial.println(gps.location.lng(), 6);
+    Serial.println("Speed MPH:");
+    Serial.println(gps.speed.mph());
+    Serial.println("Altitude Feet:");
+    Serial.println(gps.altitude.feet());
+    Serial.println("");
+  }
+}
+
 /*
-  Blink
-  Turns on an LED on for one second, then off for one second, repeatedly.
-  Most Arduinos have an on-board LED you can control. On the Uno and
-  Leonardo, it is attached to digital pin 13. If you're unsure what
-  pin the on-board LED is connected to on your Arduino model, check
-  the documentation at http://www.arduino.cc
- */
-
-// the setup function runs once when you press reset or power the board
-void setup() {
-  // initialize digital pin 13 as an output.
-  pinMode(13, OUTPUT);
-}
-
-
-// the loop function runs over and over again forever
-void loop() {
-  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);              // wait for a second
-  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);              // wait for a second
-}
+ * $GPRMC,183729,A,3907.356,N,12102.482,W,000.0,360.0,080301,015.5,E*6F
+$GPRMB,A,,,,,,,,,,,,V*71
+$GPGGA,183730,3907.356,N,12102.482,W,1,05,1.6,646.4,M,-24.1,M,,*75
+$GPGSA,A,3,02,,,07,,09,24,26,,,,,1.6,1.6,1.0*3D
+$GPGSV,2,1,08,02,43,088,38,04,42,145,00,05,11,291,00,07,60,043,35*71
+$GPGSV,2,2,08,08,02,145,00,09,46,303,47,24,16,178,32,26,18,231,43*77
+$PGRME,22.0,M,52.9,M,51.0,M*14
+$GPGLL,3907.360,N,12102.481,W,183730,A*33
+$PGRMZ,2062,f,3*2D
+$PGRMM,WGS 84*06
+$GPBOD,,T,,M,,*47
+$GPRTE,1,1,c,0*07
+$GPRMC,183731,A,3907.482,N,12102.436,W,000.0,360.0,080301,015.5,E*67
+$GPRMB,A,,,,,,,,,,,,V*71
+*/
